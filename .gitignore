@@ -22,3 +22,10 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+debug
+rzdtimetablebot
+.vscode
+*.db
+
+Godeps/_worspace

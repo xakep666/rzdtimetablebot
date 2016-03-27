@@ -1,0 +1,42 @@
+{
+	"ImportPath": "rzdtimetablebot",
+	"GoVersion": "go1.5",
+	"GodepVersion": "v60",
+	"Deps": [
+		{
+			"ImportPath": "github.com/boltdb/bolt",
+			"Comment": "v1.2.0",
+			"Rev": "c6ba97b89e0454fec9aa92e1d33a4e2c5fc1f631"
+		},
+		{
+			"ImportPath": "github.com/fiam/gounidecode/unidecode",
+			"Rev": "8deddbd03fec2c28969266e52f27b6fb22be1823"
+		},
+		{
+			"ImportPath": "github.com/go-telegram-bot-api/telegram-bot-api",
+			"Comment": "v1.0.0-6-g67abf47",
+			"Rev": "67abf47ae87ad47fc22281d35c4da8df00522697"
+		},
+		{
+			"ImportPath": "github.com/technoweenie/multipartstreamer",
+			"Comment": "v1.0.1",
+			"Rev": "a90a01d73ae432e2611d178c18367fbaa13e0154"
+		},
+		{
+			"ImportPath": "github.com/yhat/scrape",
+			"Rev": "53e4de4d80edac458f4761a5eca90ea9b6272971"
+		},
+		{
+			"ImportPath": "golang.org/x/net/html",
+			"Rev": "9d8ef8d73b53840886e4a772c72f2b7d396cb37c"
+		},
+		{
+			"ImportPath": "golang.org/x/net/html/atom",
+			"Rev": "9d8ef8d73b53840886e4a772c72f2b7d396cb37c"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "320cb01ddbbf0473674c2585f9b6e245721de355"
+		}
+	]
+}

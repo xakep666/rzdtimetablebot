@@ -5,6 +5,7 @@ import (
 	"math"
 	"strconv"
 	"sync"
+    "reflect"
 )
 
 type sorterFunc func(*tgbotapi.BotAPI, tgbotapi.Update, []interface{}) (sorterFunc, []interface{})
@@ -30,7 +31,9 @@ func botRequestHandler(bot *tgbotapi.BotAPI) {
 	for update := range updates {
 		go func(bot *tgbotapi.BotAPI, update tgbotapi.Update, sorter *msgSorter) {
 			chatsorter := (*sorter)[update.Message.Chat.ID]
-			if chatsorter.fn == nil || update.Message.Text == "/cancel" {
+            //отключаем отмену для ввода таймзоны
+			if chatsorter.fn == nil || (update.Message.Text == "/cancel" && 
+                                        reflect.ValueOf(chatsorter.fn).Pointer()!=reflect.ValueOf(recvTZ).Pointer()) {
 				chatsorter.fn = askCommand
 				chatsorter.data = nil
 			}
@@ -57,7 +60,11 @@ func recvCommand(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []interface{
 	case "/start":
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, StartMessage)
 		bot.Send(msg)
-        newfn,_=askCommand(bot,update,nil)
+        newfn=recvTZ
+    case "/changetz":
+        msg :=tgbotapi.NewMessage(update.Message.Chat.ID,"Введите новый часовой пояс (например, +3 для Москвы)")
+        newfn=recvTZ
+        bot.Send(msg)
 	case "/searchcode":
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Выберете узел")
 		msg.ReplyMarkup = kbdMarkupAligner(nodeNames())

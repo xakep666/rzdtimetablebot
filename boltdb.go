@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"strconv"
+    "time"
+    "errors"
 )
 
 type BoltDB struct {
@@ -97,6 +99,47 @@ func (db *BoltDB) GetUserStations(user int) (ret DBUserInfo, err error) {
 		return err
 	})
 	return
+}
+
+func (db *BoltDB) SetTimeZone(user int,offset float64) (err error) {
+    myLogf(LogDebug, "BoltDB: Setting timezone for user %d\n",user)
+    err = db.handler.Update(func(tx *bolt.Tx) error{
+        bck:=tx.Bucket([]byte(settings.DBTable))
+        userinfobytes:=bck.Get([]byte(strconv.Itoa(user)))
+        userinfo:=DBUserInfo{}
+        err:=json.Unmarshal(userinfobytes,&userinfo)
+        if err!=nil {
+            return err
+        }
+        if !isValidTZOffset(offset) {
+            return errors.New("Invalid tz offset")
+        }
+        //создаем таймзону для отдельного пользователя
+        userinfo.tz=*time.FixedZone("UserZone",int(offset*time.Hour.Seconds()))
+        userinfobytes,err=json.Marshal(userinfo)
+        if err!=nil {
+            return err
+        }
+        err=bck.Put([]byte(strconv.Itoa(user)),userinfobytes)
+        return err
+    })
+    return
+}
+
+func (db *BoltDB) GetTimeZone(user int) (tz time.Location,err error) {
+    myLogf(LogDebug, "BoltDB: Extracting timezone for user %d\n",user)
+    err = db.handler.View(func(tx *bolt.Tx) error {
+        bck:=tx.Bucket([]byte(settings.DBTable))
+        userinfobytes:=bck.Get([]byte(strconv.Itoa(user)))
+        userinfo:=DBUserInfo{}
+        err:=json.Unmarshal(userinfobytes,&userinfo)
+        if err!=nil {
+            return err
+        }
+        tz = userinfo.tz
+        return nil
+    })
+    return
 }
 
 func (db *BoltDB) Close() error {

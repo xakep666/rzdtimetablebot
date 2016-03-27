@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+    "strings"
+    "math"
+)
 
 func stationByCode(code int) string {
 	ret := ""
@@ -54,4 +57,9 @@ func (csps CodeStationPairs) Swap(i, j int) {
 
 func (csps CodeStationPairs) Less(i, j int) bool {
 	return csps[i].Name < csps[j].Name
+}
+
+//должно быть целым или полуцелым (2 или 2.5)
+func isValidTZOffset(in float64) bool {
+    return in==math.Floor(in)||(in-0.5)==math.Floor(in)
 }

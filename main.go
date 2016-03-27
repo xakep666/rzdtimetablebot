@@ -12,7 +12,9 @@ import (
 	"syscall"
 )
 
-const StartMessage = "Этот бот отображает фактическое движение пригородных поездов\n"+Commands
+const StartMessage = "Этот бот отображает фактическое движение пригородных поездов\n"+
+                     "Введите ваш часовой пояс, считая от Гринвича (например,+3 для Москвы).\n"+
+                     "Это необходимо для корректного отображения расписания."+Commands
 const Commands = "Доступные комманды:\n"+
                  "/searchcode - Поиск кода станции по названию\n"+
                  "/addstation - Добавить станцию в сохранённые\n"+
@@ -21,6 +23,7 @@ const Commands = "Доступные комманды:\n"+
                  "/showline - Показать станции, находящиеся на определённой линии (направлении)\n"+
                  "/timetablebycode - Показать расписание движения по коду станции\n"+
                  "/timetablefromsaved - Показать расписание движения сохранённой станции\n"+
+                 "/changetz - Изменить часовой пояс\n"+
                  "/help - Это сообщение"
 const TimeTableQueryUrlFormat = "http://pass.rzd.ru/tablo/public/ru?STRUCTURE_ID=704&layer_id=5366&refererLayerId=5368&date=%s&id=%d"
 

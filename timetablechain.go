@@ -5,6 +5,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"strconv"
 	"strings"
+    "time"
 )
 
 func recvStationCodeTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []interface{}) (newfn sorterFunc, newdata []interface{}) {
@@ -72,7 +73,16 @@ func recvShowTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []inte
 		return
 	}
 	msg.ReplyMarkup = kbdMarkupAligner([]string{"Да", "Нет"})
-	now := update.Message.Time()
+	tz,err := settings.dbinterface.GetTimeZone(update.Message.Chat.ID)
+    if err!=nil {
+        myLogf(LogError,"recvShowTimeTable extracting timezone for %s [%d] failed (%s)",update.Message.Chat.FirstName,update.Message.Chat.ID,err.Error())
+        msg.Text="Ошибка извлечения часового пояса"
+        bot.Send(msg)
+        newfn,_=askCommand(bot,update,nil)
+        return
+    }
+    now:=time.Now()
+    now=time.Date(now.Year(),now.Month(),now.Day(),now.Hour(),now.Minute(),0,0,&tz)
 	msg.Text = "Формат\nНомерМаршрута|ВремяПрибытия|ВремяОтправления|Сообщение|ФактическоеДвижение\n"
 	procarriving := tabletoshow.Direction == "ПРИБЫТИЕ"
 	for _, v := range tabletoshow.TimeTable {

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+    "errors"
 )
 
 /* Структура таблицы
@@ -157,6 +158,9 @@ func DownloadStationTimeTable(stationcode int) (StationTimeTable, error) {
 	directions := getDirections(root)
 	myLogf(LogDebug, "Found %d directions for station %s\n", len(directions), stationByCode(stationcode))
 	tables := getTables(root)
+    if len(directions)==0 || len(tables)==0 {
+        return stts,errors.New("Parsing error, troubles on site?")
+    }
 	myLogf(LogDebug, "Found %d tables for station %s\n", len(tables), stationByCode(stationcode))
 	if len(directions) != len(tables) {
 		return stts, fmt.Errorf("Mismatched number of directions (%d) and tables(%d) for station %s",

@@ -55,10 +55,9 @@ func recvCommand(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []interface{
 	myLogf(LogDebug, "Handling command request for %s [%d]", update.Message.Chat.FirstName, update.Message.Chat.ID)
 	switch update.Message.Text {
 	case "/start":
-		{
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, StartMessage)
-			bot.Send(msg)
-		}
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, StartMessage)
+		bot.Send(msg)
+        newfn,_=askCommand(bot,update,nil)
 	case "/searchcode":
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Выберете узел")
 		msg.ReplyMarkup = kbdMarkupAligner(nodeNames())
@@ -105,7 +104,7 @@ func recvCommand(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []interface{
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 		userstations, err := settings.dbinterface.GetUserStations(update.Message.Chat.ID)
 		if err != nil {
-			msg.Text = "Ошибка функции"
+			msg.Text = "Ошибка извлечения из базы"
 			myLogf(LogError, "Error getting user stations for %s [%d]: %s",
 				update.Message.Chat.FirstName, update.Message.Chat.ID, err.Error())
 			bot.Send(msg)
@@ -120,6 +119,10 @@ func recvCommand(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []interface{
 			bot.Send(msg)
 			newfn = recvStationCodeTimeTable
 		}
+    case "/help":
+            msg:=tgbotapi.NewMessage(update.Message.Chat.ID,Commands)
+            bot.Send(msg)
+            newfn,_=askCommand(bot,update,nil)
 	default:
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Комманда не распознана")
 		bot.Send(msg)

@@ -12,7 +12,16 @@ import (
 	"syscall"
 )
 
-const StartMessage = "Стартовое сообщение"
+const StartMessage = "Этот бот отображает фактическое движение пригородных поездов\n"+Commands
+const Commands = "Доступные комманды:\n"+
+                 "/searchcode - Поиск кода станции по названию\n"+
+                 "/addstation - Добавить станцию в сохранённые\n"+
+                 "/liststations - Показать сохранённые станции\n"+
+                 "/delstation - Удалить станцию из сохраненныех\n"+
+                 "/showline - Показать станции, находящиеся на определённой линии (направлении)\n"+
+                 "/timetablebycode - Показать расписание движения по коду станции\n"+
+                 "/timetablefromsaved - Показать расписание движения сохранённой станции\n"+
+                 "/help - Это сообщение"
 const TimeTableQueryUrlFormat = "http://pass.rzd.ru/tablo/public/ru?STRUCTURE_ID=704&layer_id=5366&refererLayerId=5368&date=%s&id=%d"
 
 func initNodes() {

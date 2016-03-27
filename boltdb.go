@@ -108,7 +108,7 @@ func (db *BoltDB) SetTimeZone(user int,offset float64) (err error) {
         userinfobytes:=bck.Get([]byte(strconv.Itoa(user)))
         userinfo:=DBUserInfo{}
         err:=json.Unmarshal(userinfobytes,&userinfo)
-        if err!=nil {
+        if err!=nil && len(userinfobytes)!=0 { //в данном случае пустой буфер - не ошибка
             return err
         }
         if !isValidTZOffset(offset) {
@@ -116,11 +116,11 @@ func (db *BoltDB) SetTimeZone(user int,offset float64) (err error) {
         }
         //создаем таймзону для отдельного пользователя
         userinfo.tz=*time.FixedZone("UserZone",int(offset*time.Hour.Seconds()))
-        userinfobytes,err=json.Marshal(userinfo)
+        buf,err:=json.Marshal(userinfo)
         if err!=nil {
             return err
         }
-        err=bck.Put([]byte(strconv.Itoa(user)),userinfobytes)
+        err=bck.Put([]byte(strconv.Itoa(user)),buf)
         return err
     })
     return

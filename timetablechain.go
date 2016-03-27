@@ -5,7 +5,6 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func recvStationCodeTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []interface{}) (newfn sorterFunc, newdata []interface{}) {
@@ -73,7 +72,7 @@ func recvShowTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []inte
 		return
 	}
 	msg.ReplyMarkup = kbdMarkupAligner([]string{"Да", "Нет"})
-	now := time.Now()
+	now := update.Message.Time()
 	msg.Text = "Формат\nНомерМаршрута|ВремяПрибытия|ВремяОтправления|Сообщение|ФактическоеДвижение\n"
 	procarriving := tabletoshow.Direction == "ПРИБЫТИЕ"
 	for _, v := range tabletoshow.TimeTable {

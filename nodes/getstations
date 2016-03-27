@@ -1,0 +1,2 @@
+wget -O - "pass.rzd.ru/timetable/public/ru?STRUCTURE_ID=704&layer_id=5368&refererLayerId=5364&id=260&node_id=19" | grep -Eo "id=[[:digit:]]{4}&amp;dir_id=[[:digit:]]{3}\">.+<" | cut -d "<" -f1 | sed -e 's/">/;/g' -e 's/&amp//g' -e 's/id=//g' -e 's/dir_id=//g' | awk -F";" '{print $1 " " $3}' > msk_sav.txt
+

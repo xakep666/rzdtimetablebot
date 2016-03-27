@@ -19,7 +19,7 @@ func recvTZ(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []interface{}) (n
     }
     err=settings.dbinterface.SetTimeZone(update.Message.Chat.ID,offset)
     if err!=nil {
-        myLogf(LogError,"Update timezone for %s [%d] failed (%s)",update.Message.Chat.ID,update.Message.Chat.FirstName,err.Error())
+        myLogf(LogError,"Update timezone for %s [%d] failed (%s)",update.Message.Chat.FirstName,update.Message.Chat.ID,err.Error())
         newfn=recvTZ
         msg.Text="Ошибка базы данных, попробуйте ввести ещё раз"
         bot.Send(msg)

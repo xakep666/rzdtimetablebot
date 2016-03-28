@@ -86,7 +86,7 @@ func recvShowTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []inte
 	msg.Text = "Формат\nНомерМаршрута|ВремяПрибытия|ВремяОтправления|Сообщение|ФактическоеДвижение\n"
 	procarriving := tabletoshow.Direction == "ПРИБЫТИЕ"
 	for _, v := range tabletoshow.TimeTable {
-		arrtime := v.ArrivalTime
+		arrtime := time.ParseInLocation("",v.ArrivalTime.Format(""),&tz)
 		arrtimetext := ""
 		if arrtime != nil {
 			arrtimetext = arrtime.Format("15:04")

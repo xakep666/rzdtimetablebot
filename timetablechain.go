@@ -82,7 +82,7 @@ func recvShowTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []inte
         return
     }
     now:=time.Now()
-    now=time.Date(now.Year(),now.Month(),now.Day(),now.Hour(),now.Minute(),0,0,&tz)
+    now,_=time.ParseInLocation("",now.Format(""),&tz)
 	msg.Text = "Формат\nНомерМаршрута|ВремяПрибытия|ВремяОтправления|Сообщение|ФактическоеДвижение\n"
 	procarriving := tabletoshow.Direction == "ПРИБЫТИЕ"
 	for _, v := range tabletoshow.TimeTable {

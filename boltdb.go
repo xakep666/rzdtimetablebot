@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"strconv"
-    "time"
-    "errors"
 )
 
 type BoltDB struct {
@@ -28,7 +26,7 @@ func BoltInit() (db *BoltDB, err error) {
 	return
 }
 
-func (db *BoltDB) AddStation(code int, node string, user int) (err error) {
+func (db *BoltDB) AddStation(code int, node string,user int) (err error) {
 	myLogf(LogDebug, "BoltDB: Trying add station %s in node %s for user %d\n", stationByCode(code), node, user)
 	err = db.handler.Update(func(tx *bolt.Tx) error {
 		bck := tx.Bucket([]byte(settings.DBTable))
@@ -99,47 +97,6 @@ func (db *BoltDB) GetUserStations(user int) (ret DBUserInfo, err error) {
 		return err
 	})
 	return
-}
-
-func (db *BoltDB) SetTimeZone(user int,offset float64) (err error) {
-    myLogf(LogDebug, "BoltDB: Setting timezone for user %d\n",user)
-    err = db.handler.Update(func(tx *bolt.Tx) error{
-        bck:=tx.Bucket([]byte(settings.DBTable))
-        userinfobytes:=bck.Get([]byte(strconv.Itoa(user)))
-        userinfo:=DBUserInfo{}
-        err:=json.Unmarshal(userinfobytes,&userinfo)
-        if err!=nil && len(userinfobytes)!=0 { //в данном случае пустой буфер - не ошибка
-            return err
-        }
-        if !isValidTZOffset(offset) {
-            return errors.New("Invalid tz offset")
-        }
-        //создаем таймзону для отдельного пользователя
-        userinfo.tz=*time.FixedZone("UserZone",int(offset*time.Hour.Seconds()))
-        buf,err:=json.Marshal(userinfo)
-        if err!=nil {
-            return err
-        }
-        err=bck.Put([]byte(strconv.Itoa(user)),buf)
-        return err
-    })
-    return
-}
-
-func (db *BoltDB) GetTimeZone(user int) (tz time.Location,err error) {
-    myLogf(LogDebug, "BoltDB: Extracting timezone for user %d\n",user)
-    err = db.handler.View(func(tx *bolt.Tx) error {
-        bck:=tx.Bucket([]byte(settings.DBTable))
-        userinfobytes:=bck.Get([]byte(strconv.Itoa(user)))
-        userinfo:=DBUserInfo{}
-        err:=json.Unmarshal(userinfobytes,&userinfo)
-        if err!=nil {
-            return err
-        }
-        tz = userinfo.tz
-        return nil
-    })
-    return
 }
 
 func (db *BoltDB) Close() error {

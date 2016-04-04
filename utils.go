@@ -2,7 +2,7 @@ package main
 
 import (
     "strings"
-    "math"
+    "time"
 )
 
 func stationByCode(code int) string {
@@ -59,7 +59,11 @@ func (csps CodeStationPairs) Less(i, j int) bool {
 	return csps[i].Name < csps[j].Name
 }
 
-//должно быть целым или полуцелым (2 или 2.5)
-func isValidTZOffset(in float64) bool {
-    return in==math.Floor(in)||(in-0.5)==math.Floor(in)
+func GetStationTZ (code int) *time.Location {
+    for _,v:=range nodes {
+        if _,exist:=v.stations[code]; exist {
+            return &v.TZ
+        }
+    }
+    return nil
 }

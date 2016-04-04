@@ -1,6 +1,7 @@
 {
     "NodeName": "Москва",
     "CodesFile" :"msk_codes.txt",
+    "TZLocation" : "Europe/Moscow",
     "Lines":[
         {
             "LineName":"Белорусское",

@@ -27,7 +27,7 @@ func recvStationCodeTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data
 		return
 	}
 	directions := []string{}
-	for _, v := range timetable {
+	for _, v := range timetable.Entries {
 		directions = append(directions, v.Direction)
 	}
 	msg.Text = "В какую сторону показать расписание"
@@ -59,7 +59,7 @@ func recvShowTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []inte
 	}
 	found := false
 	tabletoshow := StationTimeTableEntry{}
-	for _, v := range timetable {
+	for _, v := range timetable.Entries {
 		if strings.ToUpper(v.Direction) == strings.ToUpper(update.Message.Text) {
 			found = true
 			tabletoshow = v
@@ -73,15 +73,7 @@ func recvShowTimeTable(bot *tgbotapi.BotAPI, update tgbotapi.Update, data []inte
 		return
 	}
 	msg.ReplyMarkup = kbdMarkupAligner([]string{"Да", "Нет"})
-	tz,err := settings.dbinterface.GetTimeZone(update.Message.Chat.ID)
-   	if err!=nil {
-        	myLogf(LogError,"recvShowTimeTable extracting timezone for %s [%d] failed (%s)",update.Message.Chat.FirstName,update.Message.Chat.ID,err.Error())
-        	msg.Text="Ошибка извлечения часового пояса"
-        	bot.Send(msg)
-        	newfn,_=askCommand(bot,update,nil)
-        	return
-    	}
-    	now:=time.Now().In(&tz)
+    now:=time.Now().In(timetable.TZ)
 	msg.Text = "Формат\nНомерМаршрута|ВремяПрибытия|ВремяОтправления|Сообщение|ФактическоеДвижение\n"
 	procarriving := tabletoshow.Direction == "ПРИБЫТИЕ"
 	for _, v := range tabletoshow.TimeTable {

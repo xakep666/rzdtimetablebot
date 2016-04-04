@@ -28,7 +28,10 @@ type StationTimeTableEntry struct {
 	TimeTable []TimeTableRow
 }
 
-type StationTimeTable []StationTimeTableEntry
+type StationTimeTable struct{
+    Entries []StationTimeTableEntry
+    TZ        *time.Location
+}
 
 func getDirections(root *html.Node) []string {
 	//ищем названия направалений (находится в теге <a> с классом j-station-toggler)
@@ -115,27 +118,27 @@ func getTables(root *html.Node) [][]TimeTableRow {
 }
 
 func postProcessForEndStation(stt *StationTimeTable, name string) {
-	for i := 0; i < len(*stt); i++ {
-		if (*stt)[i].Direction == name {
-			(*stt)[i].Direction = "ПРИБЫТИЕ"
+	for i := 0; i < len(stt.Entries); i++ {
+		if stt.Entries[i].Direction == name {
+			stt.Entries[i].Direction = "ПРИБЫТИЕ"
 			return
 		}
 	}
 	finishing := []TimeTableRow{}
-	for i := 0; i < len(*stt); i++ {
-		for j := 0; j < len((*stt)[i].TimeTable); {
-			if (*stt)[i].TimeTable[j].DepartTime == nil {
-				finishing = append(finishing, (*stt)[i].TimeTable[j])
-				copy((*stt)[i].TimeTable[j:], (*stt)[i].TimeTable[j+1:])
-				(*stt)[i].TimeTable[len((*stt)[i].TimeTable)-1] = TimeTableRow{}
-				(*stt)[i].TimeTable = (*stt)[i].TimeTable[:len((*stt)[i].TimeTable)-1]
+	for i := 0; i < len(stt.Entries); i++ {
+		for j := 0; j < len(stt.Entries[i].TimeTable); {
+			if stt.Entries[i].TimeTable[j].DepartTime == nil {
+				finishing = append(finishing, stt.Entries[i].TimeTable[j])
+				copy(stt.Entries[i].TimeTable[j:], stt.Entries[i].TimeTable[j+1:])
+				stt.Entries[i].TimeTable[len(stt.Entries[i].TimeTable)-1] = TimeTableRow{}
+				stt.Entries[i].TimeTable = stt.Entries[i].TimeTable[:len(stt.Entries[i].TimeTable)-1]
 				continue
 			}
 			j++
 		}
 	}
 	if len(finishing) > 0 {
-		*stt = append(*stt, StationTimeTableEntry{Direction: "ПРИБЫТИЕ", TimeTable: finishing})
+		stt.Entries = append(stt.Entries, StationTimeTableEntry{Direction: "ПРИБЫТИЕ", TimeTable: finishing})
 		myLogf(LogDebug, "Found finishing routes at %s, adding \"Arrived\" direction", name)
 	}
 }
@@ -167,8 +170,9 @@ func DownloadStationTimeTable(stationcode int) (StationTimeTable, error) {
 			len(directions), len(tables), stationByCode(stationcode))
 	}
 	for i := 0; i < len(directions); i++ {
-		stts = append(stts, StationTimeTableEntry{Direction: directions[i], TimeTable: tables[i]})
+		stts.Entries = append(stts.Entries, StationTimeTableEntry{Direction: directions[i], TimeTable: tables[i]})
 	}
 	postProcessForEndStation(&stts, stationByCode(stationcode))
+    stts.TZ=GetStationTZ(stationcode)
 	return stts, nil
 }

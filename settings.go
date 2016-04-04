@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+    "time"
 )
 
 const (
@@ -37,6 +38,8 @@ type Node struct {
 	NodeName  string
 	CodesFile string
 	Lines     []Line
+    TZLocation  string
+    TZ        time.Location
 	stations  StationMap
 }
 
@@ -82,5 +85,11 @@ func parseNode(filename string) (n Node, err error) {
 	}
 	n.stations, err = parseStations(n.CodesFile)
 	myLogf(LogInfo, "Found %d stations and %d lines for node \"%s\"\n", len(n.stations), len(n.Lines), n.NodeName)
+    loc,err:=time.LoadLocation(n.TZLocation)
+    if err !=nil {
+        return n,err
+    }
+    n.TZ=*loc
+    myLogf(LogInfo, "Got TZ: [%s] for node %s\n",n.TZLocation,n.NodeName)
 	return n, err
 }

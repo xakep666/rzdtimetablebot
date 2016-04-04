@@ -2,13 +2,11 @@ package main
 
 import (
 	"errors"
-    "time"
 )
 
 type DBUserInfo struct {
 	ID       int
 	Stations []NSPair
-    tz       time.Location
 }
 
 type NSPair struct {
@@ -17,11 +15,9 @@ type NSPair struct {
 }
 
 type DBInterface interface {
-	AddStation(code int, node string, user int) error //название узла для удобства вывода
+	AddStation(code int, node string,user int) error
 	DelStation(code int, user int) error
 	GetUserStations(user int) (DBUserInfo, error)
-    SetTimeZone(user int,offset float64) error //offset - число часов до нужной зоны, считая от UTC
-    GetTimeZone(user int) (time.Location,error) 
 	Close() error
 }
 
